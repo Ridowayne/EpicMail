@@ -11,13 +11,14 @@ const peopleSchema: Schema = new Schema({
     },
     name: {
         type: String, 
-        required: true
+        required: true,
+        validate:[/(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})/, 'Kindly provide a valid name']
     },
     phoneNumber: {
         type: Number, 
         required: true,
         unique: true, 
-        // validate: [validator.isMobilePhone, 'kindly provide a valid mobile number']
+        validate: [/^\s*(?:\+?(\d{1,3}))?([-. (]*(\d{3})[-. )]*)?((\d{3})[-. ]*(\d{2,4})(?:[-.x ]*(\d+))?)\s*$/, 'kindly provide a valid mobile number']
     },
     active: {
         type: Boolean, 
@@ -56,3 +57,10 @@ const peopleSchema: Schema = new Schema({
 })
 
 export default mongoose.model<IUser>('PEOPLE', peopleSchema)
+
+// validate: {
+//     validator: function(v) {
+//         return /(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16});
+//     },
+//     message: "Please enter a valid email"
+// }

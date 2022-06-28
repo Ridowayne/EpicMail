@@ -1,3 +1,6 @@
-.prrettierrc
+.prettierrc
 node_modules
 config.env
+/src/contollers/UserController.ts
+/src/models/UserModels.ts
+/src/routes/UserRoutes.ts

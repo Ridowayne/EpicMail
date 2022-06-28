@@ -8,8 +8,6 @@ import IUser from "../interfaces/authInterface";
 
 
 const register = async (req: Request, res: Response, Next: NextFunction) => {
-
-
     try {
 
         let {name, phoneNumber, password, email} = req.body
@@ -31,12 +29,7 @@ const register = async (req: Request, res: Response, Next: NextFunction) => {
             
         });       
         
-    await _user.save()
-
-        
-
-        
-
+     await _user.save().then(_user =>{
         signJWT(_user, (error, token) => {
 
             if (error) {
@@ -53,8 +46,16 @@ const register = async (req: Request, res: Response, Next: NextFunction) => {
             })
     
         })
-       
-    })
+    }).catch(err => {
+        console.log(err)
+        return res.status(200).json({
+            status: 'fail',
+            error: err
+        })
+
+    })    
+
+        })
         
     } catch (error) {
         return res.status(500).json({

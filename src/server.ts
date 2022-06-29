@@ -10,6 +10,7 @@ import messagageRoutes from './routes/messageRoutes';
 import authenticate from './routes/authRoutes';
 import ErrorResponse from './utils/Erromessage';
 import sendError from './contollers/errorController';
+import swaggerDocumentation from './../src/helper/documentations';
 
 dotenv.config({ path: './config.env' });
 const app = express();
@@ -36,6 +37,8 @@ app.use(compression());
 app.get('/', (req: Request, res: Response) => {
   return res.status(200).send('welcome to Epic Mail Api');
 });
+app.use('/documentations', swaggerUi.serve);
+app.use('/documentations', swaggerUi.setup(swaggerDocumentation));
 app.use('/api/v1/mail', messagageRoutes);
 app.use('/api/v1/users', authenticate);
 

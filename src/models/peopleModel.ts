@@ -57,10 +57,3 @@ const peopleSchema: Schema = new Schema({
 })
 
 export default mongoose.model<IUser>('PEOPLE', peopleSchema)
-
-// validate: {
-//     validator: function(v) {
-//         return /(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16});
-//     },
-//     message: "Please enter a valid email"
-// }

@@ -1,7 +1,7 @@
 import express from 'express';
-import controller from '../contollers/MessagesController'
+import controller from '../contollers/MessagesController';
 
-const router = express.Router()
+const router = express.Router();
 
 router.post('/sendmail', controller.createMessage);
 

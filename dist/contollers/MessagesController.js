@@ -18,8 +18,11 @@ const createMessage = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         sender: req.body.sender,
         receiver: req.body.receiver,
         heading: req.body.heading,
-        body: req.body.body
+        body: req.body.body,
     });
-    return newmail.save().then((newmail) => res.status(200).json({ newmail })).catch((error) => res.status(500).json({ error }));
+    return newmail
+        .save()
+        .then((newmail) => res.status(200).json({ newmail }))
+        .catch((error) => res.status(500).json({ error }));
 });
 exports.default = { createMessage };

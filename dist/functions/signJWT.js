@@ -13,11 +13,12 @@ const signJWT = (user, callback) => {
     console.log(NAMESPACE, `Attemptiing to sign token ${user.name}`);
     try {
         jsonwebtoken_1.default.sign({
-            email: user.email, id: user._id
+            email: user.email,
+            id: user._id,
         }, config_1.config.token.secret, {
             issuer: config_1.config.token.issuer,
             algorithm: 'HS256',
-            expiresIn: expirationTimeInSeconds
+            expiresIn: expirationTimeInSeconds,
         }, (error, token) => {
             if (error) {
                 callback(error, null);

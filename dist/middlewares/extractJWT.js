@@ -15,7 +15,7 @@ const extractJWT = (req, res, Next) => {
             if (error) {
                 return res.status(401).json({
                     message: error.message,
-                    error: error
+                    error: error,
                 });
             }
             else {
@@ -26,7 +26,7 @@ const extractJWT = (req, res, Next) => {
     }
     else {
         return res.status(401).json({
-            message: 'Unauthorized'
+            message: 'Unauthorized',
         });
     }
 };

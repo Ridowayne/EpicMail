@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
-import * as User from './UserModels';
+import * as User from './peopleModel';
 
 export interface IGroup extends Document {
   groupName: string;

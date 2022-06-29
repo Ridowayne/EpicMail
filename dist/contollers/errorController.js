@@ -31,7 +31,7 @@ const sendError = (err, req, res) => {
         status: err.status,
         error: err,
         message: err.message,
-        stack: err.stack
+        stack: err.stack,
     });
 };
 exports.default = sendError;

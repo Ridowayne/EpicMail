@@ -28,14 +28,14 @@ const MailSchema = new mongoose_1.Schema({
     sender: { type: String, required: true },
     receiver: { type: String, required: true },
     status: { type: String, enum: ['sent', 'draft', 'retrated'] },
-    subject: { type: String, },
+    subject: { type: String },
     body: { type: String, required: true },
     date: { type: Date, required: true, default: Date.now },
     retracted: { type: Boolean, default: false },
     opened: { type: Boolean, default: false },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
 }, {
-    versionKey: false
+    versionKey: false,
 });
 MailSchema.pre(/^find/, function (next) {
     this.find({ retracted: { $ne: true } });

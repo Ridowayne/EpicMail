@@ -24,7 +24,7 @@ const register = (req, res, Next) => __awaiter(void 0, void 0, void 0, function*
             if (hashError) {
                 res.status(500).json({
                     message: hashError.message,
-                    error: hashError
+                    error: hashError,
                 });
             }
             const _user = new peopleModel_1.default({
@@ -32,28 +32,31 @@ const register = (req, res, Next) => __awaiter(void 0, void 0, void 0, function*
                 name,
                 password: hash,
                 email,
-                phoneNumber
+                phoneNumber,
             });
-            yield _user.save().then(_user => {
+            yield _user
+                .save()
+                .then((_user) => {
                 (0, signJWT_1.default)(_user, (error, token) => {
                     if (error) {
                         return res.status(401).json({
                             message: 'Unauthorized',
-                            error: error
+                            error: error,
                         });
                     }
                     return res.status(200).json({
                         _id: _user._id,
                         name: _user.name,
                         email: _user.email,
-                        token: token
+                        token: token,
                     });
                 });
-            }).catch(err => {
+            })
+                .catch((err) => {
                 console.log(err);
                 return res.status(200).json({
                     status: 'fail',
-                    error: err
+                    error: err,
                 });
             });
         }));
@@ -61,7 +64,7 @@ const register = (req, res, Next) => __awaiter(void 0, void 0, void 0, function*
     catch (error) {
         return res.status(500).json({
             message: 'internal server Error',
-            error: error
+            error: error,
         });
     }
 });
@@ -69,60 +72,68 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
         if (!email || !password)
-            return res.status(400).json({ message: "Kindly provide a valid email and password" });
+            return res
+                .status(400)
+                .json({ message: 'Kindly provide a valid email and password' });
         const user = yield peopleModel_1.default.findOne({ email: req.body.email }).exec();
         if (!user)
-            return res.status(401).json({ message: "Email or Password is Wrong!" });
+            return res.status(401).json({ message: 'Email or Password is Wrong!' });
         // console.log(user.password)
         const isPasswordValid = yield bcryptjs_1.default.compare(password, user.password);
         if (!isPasswordValid)
-            return res.status(401).json({ message: "Email or Password is Wrong oooo!" });
+            return res
+                .status(401)
+                .json({ message: 'Email or Password is Wrong oooo!' });
         (0, signJWT_1.default)(user, (error, token) => {
             if (error) {
                 console.log(error);
                 return res.status(401).json({
                     message: 'Unauthorized',
-                    error: error
+                    error: error,
                 });
             }
             return res.status(200).json({
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                token: token
+                token: token,
             });
         });
     }
     catch (err) {
-        return res.status(500).json({ message: "Internal Server Error" });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 const forgotPassword = (req, res, next) => {
     try {
         let email = req.body.email;
         if (!email)
-            return res.status(404).json({ message: 'kindly provide your email before sending' });
+            return res
+                .status(404)
+                .json({ message: 'kindly provide your email before sending' });
         const user = peopleModel_1.default.findOne({ email }).exec();
         if (!user) {
-            return res.status(404).json({ message: 'There is no user with the email submitted confirm it is the correct email or signup again' });
+            return res.status(404).json({
+                message: 'There is no user with the email submitted confirm it is the correct email or signup again',
+            });
         }
         const resetToken = crypto_1.default.randomBytes(32).toString('hex');
     }
     catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal Server Error" });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
-const getAllUsers = (req, res, Next) => {
+const getAllUsers = (req, res, Next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const allUsers = peopleModel_1.default.find();
+        const allUsers = yield peopleModel_1.default.find();
         return res.status(200).json({
             status: 'sucess',
-            users: allUsers
+            users: allUsers,
         });
     }
     catch (error) {
-        return res.status(500).json({ message: "Internal Server Error" });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
-};
+});
 exports.default = { register, login, getAllUsers, forgotPassword };

@@ -24,7 +24,7 @@ const messageRoutes_1 = __importDefault(require("./routes/messageRoutes"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const Erromessage_1 = __importDefault(require("./utils/Erromessage"));
 const errorController_1 = __importDefault(require("./contollers/errorController"));
-const documentations_1 = __importDefault(require("./../src/helper/documentations"));
+const documentations_1 = __importDefault(require("./helper/documentations"));
 dotenv_1.default.config({ path: './config.env' });
 const app = (0, express_1.default)();
 const mongodb = () => __awaiter(void 0, void 0, void 0, function* () {

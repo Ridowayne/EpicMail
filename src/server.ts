@@ -10,7 +10,7 @@ import messagageRoutes from './routes/messageRoutes';
 import authenticate from './routes/authRoutes';
 import ErrorResponse from './utils/Erromessage';
 import sendError from './contollers/errorController';
-import swaggerDocumentation from './../src/helper/documentations';
+import swaggerDocumentation from './helper/documentations';
 
 dotenv.config({ path: './config.env' });
 const app = express();

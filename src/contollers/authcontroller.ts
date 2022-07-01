@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import People from '../models/peopleModel';
 import signJWT from '../functions/signJWT';
 import IUser from '../interfaces/authInterface';
+import ErrorResponse from '../utils/Erromessage';
 
 const register = async (req: Request, res: Response, Next: NextFunction) => {
   try {
@@ -103,7 +104,11 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
-const forgotPassword = (req: Request, res: Response, next: NextFunction) => {
+const forgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     let email = req.body.email;
     if (!email)
@@ -113,13 +118,22 @@ const forgotPassword = (req: Request, res: Response, next: NextFunction) => {
 
     const user = People.findOne({ email }).exec();
     if (!user) {
-      return res.status(404).json({
-        message:
-          'There is no user with the email submitted confirm it is the correct email or signup again',
-      });
+      return new ErrorResponse('No user with the email submitted', 404);
     }
 
     const resetToken = crypto.randomBytes(32).toString('hex');
+
+    const passwordResetToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+
+    const passwordResetExpires = Date.now() + 10 * 60 * 1000;
+    console.log(passwordResetExpires, passwordResetToken);
+    People.updateOne({
+      resetPasswordToken: passwordResetToken,
+      resetPasswordExpires: passwordResetExpires,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: 'Internal Server Error' });

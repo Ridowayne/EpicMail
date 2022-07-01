@@ -44,3 +44,4 @@ const groupSchema = new mongoose_1.Schema({
     ],
 });
 const Group = mongoose_1.default.model('Group', groupSchema);
+exports.default = Group;

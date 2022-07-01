@@ -1,59 +1,83 @@
-import mongoose, { Schema } from "mongoose";
-import validator from "validator";
-import IUser from "../interfaces/authInterface";
+import mongoose, { Schema } from 'mongoose';
+import validator from 'validator';
+import IUser from '../interfaces/authInterface';
+import crypto from 'crypto';
 
-
-
-
-const peopleSchema: Schema = new Schema({
+const peopleSchema: Schema = new Schema(
+  {
     _id: {
-        type: mongoose.Schema.Types.ObjectId
+      type: mongoose.Schema.Types.ObjectId,
     },
     name: {
-        type: String, 
-        required: true,
-        validate:[/(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})/, 'Kindly provide a valid name']
+      type: String,
+      required: true,
+      validate: [
+        /(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})/,
+        'Kindly provide a valid name',
+      ],
     },
     phoneNumber: {
-        type: Number, 
-        required: true,
-        unique: true, 
-        validate: [/^\s*(?:\+?(\d{1,3}))?([-. (]*(\d{3})[-. )]*)?((\d{3})[-. ]*(\d{2,4})(?:[-.x ]*(\d+))?)\s*$/, 'kindly provide a valid mobile number']
+      type: Number,
+      required: true,
+      unique: true,
+      validate: [
+        /^\s*(?:\+?(\d{1,3}))?([-. (]*(\d{3})[-. )]*)?((\d{3})[-. ]*(\d{2,4})(?:[-.x ]*(\d+))?)\s*$/,
+        'kindly provide a valid mobile number',
+      ],
     },
     active: {
-        type: Boolean, 
-        default: true
+      type: Boolean,
+      default: true,
     },
     role: {
-        type: String,
-        enum: ['user', 'admin', 'owner'],
-        default: 'user'
+      type: String,
+      enum: ['user', 'admin', 'owner'],
+      default: 'user',
     },
     password: {
-        type: String, 
-        required: true, 
-        minlength: 6,
+      type: String,
+      required: true,
+      minlength: 6,
     },
-    email: { 
-        type: String, 
-        required: true, 
-        unique: true, 
-        validate: [validator.isEmail, 'kindly provide a valid email address']
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      validate: [validator.isEmail, 'kindly provide a valid email address'],
     },
-    userGroups:[{
+    userGroups: [
+      {
         type: Schema.Types.ObjectId,
-        ref: "Group"
-    }],
+        ref: 'Group',
+      },
+    ],
     createdAt: {
-        type: Date
+      type: Date,
     },
     updatedAt: {
-        type: Date
-    }
+      type: Date,
+    },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+  },
+  {
+    timestamps: true,
+  }
+);
 
-},
-{
-    timestamps: true
-})
+peopleSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
 
-export default mongoose.model<IUser>('PEOPLE', peopleSchema)
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  console.log({ resetToken }, this.passwordResetToken);
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
+};
+
+export default mongoose.model<IUser>('PEOPLE', peopleSchema);

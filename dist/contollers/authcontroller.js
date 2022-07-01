@@ -17,6 +17,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const peopleModel_1 = __importDefault(require("../models/peopleModel"));
 const signJWT_1 = __importDefault(require("../functions/signJWT"));
+const Erromessage_1 = __importDefault(require("../utils/Erromessage"));
 const register = (req, res, Next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let { name, phoneNumber, password, email } = req.body;
@@ -104,7 +105,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 });
-const forgotPassword = (req, res, next) => {
+const forgotPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let email = req.body.email;
         if (!email)
@@ -113,17 +114,25 @@ const forgotPassword = (req, res, next) => {
                 .json({ message: 'kindly provide your email before sending' });
         const user = peopleModel_1.default.findOne({ email }).exec();
         if (!user) {
-            return res.status(404).json({
-                message: 'There is no user with the email submitted confirm it is the correct email or signup again',
-            });
+            return new Erromessage_1.default('No user with the email submitted', 404);
         }
         const resetToken = crypto_1.default.randomBytes(32).toString('hex');
+        const passwordResetToken = crypto_1.default
+            .createHash('sha256')
+            .update(resetToken)
+            .digest('hex');
+        const passwordResetExpires = Date.now() + 10 * 60 * 1000;
+        console.log(passwordResetExpires, passwordResetToken);
+        peopleModel_1.default.updateOne({
+            resetPasswordToken: passwordResetToken,
+            resetPasswordExpires: passwordResetExpires,
+        });
     }
     catch (error) {
         console.log(error);
         return res.status(500).json({ message: 'Internal Server Error' });
     }
-};
+});
 const getAllUsers = (req, res, Next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const allUsers = yield peopleModel_1.default.find();

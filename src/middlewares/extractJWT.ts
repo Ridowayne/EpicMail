@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/config';
+import ErrorResponse from '../utils/Erromessage';
+import People from '../models/peopleModel';
 
-const NAMESPACE = 'authjwt';
-
-const extractJWT = (req: Request, res: Response, Next: NextFunction) => {
-  console.log(NAMESPACE, 'working on validating the token');
+const extractJWT = (req: Request, res: Response, next: NextFunction) => {
   let token = req.headers.authorization?.split(' ')[1];
 
   if (token) {
@@ -16,8 +15,21 @@ const extractJWT = (req: Request, res: Response, Next: NextFunction) => {
           error: error,
         });
       } else {
-        res.locals.jwt = decoded;
-        Next();
+        // const currentUser = People.findById({  decoded.id });
+        // if (!currentUser) {
+        //   return next(
+        //     new ErrorResponse(
+        //       'The user belonging to this token does no longer exist.',
+        //       401
+        //     )
+        //   );
+        // } else {
+        //   res.locals.jwt = decoded;
+        //   res.locals.user = currentUser;
+        //   // req.user = currentUser;
+        // }
+
+        next();
       }
     });
   } else {

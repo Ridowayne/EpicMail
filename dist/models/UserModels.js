@@ -22,31 +22,37 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
+// import { model, Schema, Model, Document } from 'mongoose';
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const validator_1 = __importDefault(require("validator"));
-const crypto_1 = __importDefault(require("crypto"));
-const peopleSchema = new mongoose_1.Schema({
+const userSchema = new mongoose_1.Schema({
     _id: {
         type: mongoose_1.default.Schema.Types.ObjectId,
     },
     name: {
         type: String,
         required: true,
-        validate: [
-            /(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})/,
-            'Kindly provide a valid name',
-        ],
     },
     phoneNumber: {
         type: Number,
         required: true,
         unique: true,
         validate: [
-            /^\s*(?:\+?(\d{1,3}))?([-. (]*(\d{3})[-. )]*)?((\d{3})[-. ]*(\d{2,4})(?:[-.x ]*(\d+))?)\s*$/,
+            validator_1.default.isMobilePhone,
             'kindly provide a valid mobile number',
         ],
     },
@@ -63,6 +69,11 @@ const peopleSchema = new mongoose_1.Schema({
         type: String,
         required: true,
         minlength: 6,
+        select: false,
+        validate: [
+            validator_1.default.isAlphanumeric,
+            'kinly use a combination of number and letters for your passwors',
+        ],
     },
     email: {
         type: String,
@@ -70,31 +81,38 @@ const peopleSchema = new mongoose_1.Schema({
         unique: true,
         validate: [validator_1.default.isEmail, 'kindly provide a valid email address'],
     },
-    userGroups: [
-        {
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'Group',
-        },
-    ],
+    // userGroups:{
+    //     type: [Schema.Types.ObjectId],
+    //     ref: Group
+    // },
     createdAt: {
         type: Date,
     },
     updatedAt: {
         type: Date,
     },
-    passwordResetToken: String,
-    passwordResetExpires: Date,
 }, {
     timestamps: true,
 });
-peopleSchema.methods.createPasswordResetToken = function () {
-    const resetToken = crypto_1.default.randomBytes(32).toString('hex');
-    this.passwordResetToken = crypto_1.default
-        .createHash('sha256')
-        .update(resetToken)
-        .digest('hex');
-    console.log({ resetToken }, this.passwordResetToken);
-    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-    return resetToken;
+userSchema.pre('save', function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const user = this;
+        if (!user.isModified('password'))
+            return next();
+        // Hash the password with cost of 12
+        user.password = yield bcrypt_1.default.hash(user.password, 12);
+        next();
+    });
+});
+userSchema.methods.comparePassword = function (candidatePassword) {
+    let password = this.password;
+    return new Promise((resolve, reject) => {
+        bcrypt_1.default.compare(candidatePassword, password, (err, success) => {
+            if (err)
+                return reject(err);
+            return resolve(success);
+        });
+    });
 };
-exports.default = mongoose_1.default.model('PEOPLE', peopleSchema);
+const User = mongoose_1.default.model('User', userSchema);
+exports.default = User;

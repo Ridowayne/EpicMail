@@ -28,14 +28,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const validator_1 = __importDefault(require("validator"));
-const crypto_1 = __importDefault(require("crypto"));
 const peopleSchema = new mongoose_1.Schema({
     _id: {
         type: mongoose_1.default.Schema.Types.ObjectId,
     },
     name: {
         type: String,
-        required: true,
+        required: [true, 'kindly provide your name'],
         validate: [
             /(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})/,
             'Kindly provide a valid name',
@@ -43,7 +42,7 @@ const peopleSchema = new mongoose_1.Schema({
     },
     phoneNumber: {
         type: Number,
-        required: true,
+        required: [true, 'kindl provide your phone number'],
         unique: true,
         validate: [
             /^\s*(?:\+?(\d{1,3}))?([-. (]*(\d{3})[-. )]*)?((\d{3})[-. ]*(\d{2,4})(?:[-.x ]*(\d+))?)\s*$/,
@@ -61,12 +60,12 @@ const peopleSchema = new mongoose_1.Schema({
     },
     password: {
         type: String,
-        required: true,
-        minlength: 6,
+        required: [true, 'Kindly create a password'],
+        minlength: [6, 'select a password with 6 or more characters']
     },
     email: {
         type: String,
-        required: true,
+        required: [true, 'kindly provide an email address'],
         unique: true,
         validate: [validator_1.default.isEmail, 'kindly provide a valid email address'],
     },
@@ -82,19 +81,13 @@ const peopleSchema = new mongoose_1.Schema({
     updatedAt: {
         type: Date,
     },
-    passwordResetToken: String,
-    passwordResetExpires: Date,
+    passwordResetToken: {
+        type: String,
+    },
+    passwordResetExpires: {
+        type: Date,
+    },
 }, {
     timestamps: true,
 });
-peopleSchema.methods.createPasswordResetToken = function () {
-    const resetToken = crypto_1.default.randomBytes(32).toString('hex');
-    this.passwordResetToken = crypto_1.default
-        .createHash('sha256')
-        .update(resetToken)
-        .digest('hex');
-    console.log({ resetToken }, this.passwordResetToken);
-    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-    return resetToken;
-};
 exports.default = mongoose_1.default.model('PEOPLE', peopleSchema);

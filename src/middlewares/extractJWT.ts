@@ -4,39 +4,54 @@ import { config } from '../config/config';
 import ErrorResponse from '../utils/Erromessage';
 import People from '../models/peopleModel';
 
-const extractJWT = (req: Request, res: Response, next: NextFunction) => {
-  let token = req.headers.authorization?.split(' ')[1];
-
-  if (token) {
-    jwt.verify(token, config.token.secret, (error, decoded) => {
-      if (error) {
-        return res.status(401).json({
-          message: error.message,
-          error: error,
-        });
-      } else {
-        // const currentUser = People.findById({  decoded.id });
-        // if (!currentUser) {
-        //   return next(
-        //     new ErrorResponse(
-        //       'The user belonging to this token does no longer exist.',
-        //       401
-        //     )
-        //   );
-        // } else {
-        //   res.locals.jwt = decoded;
-        //   res.locals.user = currentUser;
-        //   // req.user = currentUser;
-        // }
-
-        next();
-      }
-    });
-  } else {
-    return res.status(401).json({
-      message: 'Unauthorized',
-    });
-  }
+type MyToken = {
+  email: string;
+  id: any;
+  iat: number;
+  exp: number;
+  iss: string;
 };
 
-export default extractJWT;
+const protectedRoute = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return next(
+      new ErrorResponse(
+        'You are not logged in! Please log in to get access or Sign up if you are a new user.',
+        401
+      )
+    );
+  }
+  const secret = process.env.JWT_SECRET;
+
+  const decode = (await jwt.verify(token, config.token.secret)) as MyToken;
+  if (!decode) {
+    return new ErrorResponse(
+      'You are not Authorized, Kindly log in to continue',
+      401
+    );
+  }
+  res.locals.jwt = decode;
+  req.user = await People.findById({ _id: decode.id });
+  console.log(req.user);
+
+  next();
+};
+
+export default protectedRoute;
+
+// (error, result) => {
+//   if (error) {
+//     console.log(error);
+//     return res.status(401).json({
+//       message: 'You are not Authorized, Kindly log in to continue',
+//     });
+//   }
+//   console.log(result);
+//   // const userId = result.id;
+// }

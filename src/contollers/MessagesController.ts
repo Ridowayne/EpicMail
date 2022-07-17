@@ -10,6 +10,7 @@ const createMessage = async (
   const newmail = new Message({
     sender: req.body.sender,
     receiver: req.body.receiver,
+    status: req.body.status,
     heading: req.body.heading,
     body: req.body.body,
   });

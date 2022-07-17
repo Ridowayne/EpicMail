@@ -79,3 +79,4 @@ process.on('uncaughtException', (err) => {
 process.on('unhandledRejection', (err) => {
     console.log(err);
 });
+exports.default = app;

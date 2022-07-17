@@ -10,7 +10,7 @@ const peopleSchema: Schema = new Schema(
     },
     name: {
       type: String,
-      required: true,
+      required: [true, 'kindly provide your name'],
       validate: [
         /(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})/,
         'Kindly provide a valid name',
@@ -18,7 +18,7 @@ const peopleSchema: Schema = new Schema(
     },
     phoneNumber: {
       type: Number,
-      required: true,
+      required: [true, 'kindl provide your phone number'],
       unique: true,
       validate: [
         /^\s*(?:\+?(\d{1,3}))?([-. (]*(\d{3})[-. )]*)?((\d{3})[-. ]*(\d{2,4})(?:[-.x ]*(\d+))?)\s*$/,
@@ -36,12 +36,12 @@ const peopleSchema: Schema = new Schema(
     },
     password: {
       type: String,
-      required: true,
-      minlength: 6,
+      required: [true, 'Kindly create a password'],
+      minlength: [6, 'select a password with 6 or more characters']
     },
     email: {
       type: String,
-      required: true,
+      required: [true, 'kindly provide an email address'],
       unique: true,
       validate: [validator.isEmail, 'kindly provide a valid email address'],
     },
@@ -57,27 +57,18 @@ const peopleSchema: Schema = new Schema(
     updatedAt: {
       type: Date,
     },
-    passwordResetToken: String,
-    passwordResetExpires: Date,
+    passwordResetToken: {
+      type: String,
+    },
+    passwordResetExpires: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-peopleSchema.methods.createPasswordResetToken = function () {
-  const resetToken = crypto.randomBytes(32).toString('hex');
 
-  this.passwordResetToken = crypto
-    .createHash('sha256')
-    .update(resetToken)
-    .digest('hex');
-
-  console.log({ resetToken }, this.passwordResetToken);
-
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-
-  return resetToken;
-};
 
 export default mongoose.model<IUser>('PEOPLE', peopleSchema);

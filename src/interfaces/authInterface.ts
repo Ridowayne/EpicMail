@@ -6,4 +6,8 @@ export default interface IUser extends Document {
   phoneNumber: number;
   password: string;
   email: string;
+  createdAt: string;
+  updatedAt: string;
+  passwordResetToken: string | undefined;
+  passwordResetExpires: Date | undefined;
 }

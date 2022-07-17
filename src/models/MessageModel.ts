@@ -15,18 +15,48 @@ export interface IMail extends mongoose.Document {
 
 const MailSchema: Schema = new Schema<IMail>(
   {
-    sender: { type: String, required: true },
-    receiver: { type: String, required: true },
-    status: { type: String, enum: ['sent', 'draft', 'retrated'] },
-    subject: { type: String },
-    body: { type: String, required: true },
-    date: { type: Date, required: true, default: Date.now },
-    retracted: { type: Boolean, default: false },
-    opened: { type: Boolean, default: false },
-    createdAt: { type: Date, default: Date.now },
+    sender: {
+      type: String,
+      required: true,
+    },
+    receiver: {
+      type: String,
+      required: [true, 'Kindly provide a recipient for this message'],
+    },
+    status: {
+      required: true,
+      type: String,
+      enum: ['sent', 'draft', 'retrated'],
+      default: 'draft',
+    },
+    subject: {
+      type: String,
+    },
+    body: {
+      type: String,
+      required: [true, 'Please provide a message to be sent'],
+    },
+    date: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    },
+    retracted: {
+      type: Boolean,
+      default: false,
+    },
+    opened: {
+      type: Boolean,
+      default: false,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   {
     versionKey: false,
+    timestamps: true,
   }
 );
 

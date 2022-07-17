@@ -76,3 +76,6 @@ process.on('uncaughtException', (err) => {
 process.on('unhandledRejection', (err) => {
   console.log(err);
 });
+
+
+export default app

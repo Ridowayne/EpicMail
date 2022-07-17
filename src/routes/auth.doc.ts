@@ -121,6 +121,85 @@ const loginUser = {
   },
 };
 
+const forgotPassword = {
+  tags: ['Users'],
+  description: 'routes to request for reset password link',
+  summary:
+    'for requesting for link to resset password by user who hass forgotten password after due verification',
+  requestBody: {
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            email: {
+              type: 'string',
+              decription:
+                'E-mail address Unique to just the user that was used to sign up initially',
+              example: 'Nigeria123@gamil.com',
+            },
+          },
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            example: {
+              message:
+                'Token sent to you via your email, click on the link to verify',
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const resetPassword = {
+  tags: ['Users'],
+  description: 'routes to reset password from link sent to mail',
+  summary:
+    'for resetting to a new password after with the link to the reset password routes sent to the mail of the user along with the reset token',
+  requestBody: {
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            password: {
+              type: 'string',
+              decription: 'new Preffered password of user',
+              example: 'Nigeria123',
+            },
+          },
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            example: {
+              message:
+                'Token sent to you via your email, click on the link to verify',
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
 const userRoutesDoc = {
   '/api/v1/users/allUsers': {
     get: getAllUsers,
@@ -130,6 +209,12 @@ const userRoutesDoc = {
   },
   '/api/v1/users/signup': {
     post: signupUser,
+  },
+  '/api/v1/users/forgotPassword': {
+    post: forgotPassword,
+  },
+  '/api/v1/users/resetPassword': {
+    post: resetPassword,
   },
 };
 

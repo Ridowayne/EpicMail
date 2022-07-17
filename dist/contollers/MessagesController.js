@@ -17,6 +17,7 @@ const createMessage = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     const newmail = new MessageModel_1.default({
         sender: req.body.sender,
         receiver: req.body.receiver,
+        status: req.body.status,
         heading: req.body.heading,
         body: req.body.body,
     });

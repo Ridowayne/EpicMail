@@ -190,8 +190,10 @@ const resetPassword = {
           schema: {
             type: 'object',
             example: {
-              message:
-                'Token sent to you via your email, click on the link to verify',
+              id: 'string',
+              name: '',
+              email: '',
+              token: 'token',
             },
           },
         },

@@ -20,6 +20,19 @@ const getAllUsers = {
         },
       },
     },
+    500: {
+      description: 'Internal server error',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            example: {
+              message: 'Internal Server Error',
+            },
+          },
+        },
+      },
+    },
   },
 };
 const signupUser = {

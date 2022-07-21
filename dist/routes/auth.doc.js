@@ -20,6 +20,19 @@ const getAllUsers = {
                 },
             },
         },
+        500: {
+            description: 'Internal server error',
+            content: {
+                'application/json': {
+                    schema: {
+                        type: 'object',
+                        example: {
+                            message: 'Internal Server Error',
+                        },
+                    },
+                },
+            },
+        },
     },
 };
 const signupUser = {
@@ -184,7 +197,10 @@ const resetPassword = {
                     schema: {
                         type: 'object',
                         example: {
-                            message: 'Token sent to you via your email, click on the link to verify',
+                            id: 'string',
+                            name: '',
+                            email: '',
+                            token: 'token',
                         },
                     },
                 },

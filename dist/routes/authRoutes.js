@@ -6,7 +6,7 @@ const express_1 = __importDefault(require("express"));
 const extractJWT_1 = __importDefault(require("../middlewares/extractJWT"));
 const authcontroller_1 = __importDefault(require("./../contollers/authcontroller"));
 const router = (0, express_1.default)();
-router.post('/signup', authcontroller_1.default.register);
+router.post('/signup', authcontroller_1.default.signUp);
 router.post('/login', authcontroller_1.default.login);
 router.post('/forgotPassword', authcontroller_1.default.forgotPassword);
 router.post('/resetPassword/:resetToken', authcontroller_1.default.resetPassword);

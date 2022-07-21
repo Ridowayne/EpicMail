@@ -97,7 +97,7 @@ describe('Epic mail API', () => {
         });
     });
 
-    it('it should not log users in with incorrect email credentilas', (done) => {
+    it('it should not log users in with incorrect password credentilas', (done) => {
       chai
         .request(server)
         .post('/api/v1/users/login')

@@ -1,7 +1,7 @@
 {
   "name": "epic-mail",
   "version": "1.0.0",
-  "description": "",
+  "description": "Web application that helps people exchange messages and information over the internet.",
   "main": "tssrc/server.ts",
   "scripts": {
     "build": "rm -rf build/ && tsc",

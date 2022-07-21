@@ -14,22 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config/config");
-const Erromessage_1 = __importDefault(require("../utils/Erromessage"));
-const peopleModel_1 = __importDefault(require("../models/peopleModel"));
-const protectedRoute = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    let token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
-    if (!token) {
-        return next(new Erromessage_1.default('You are not logged in! Please log in to get access or Sign up if you are a new user.', 401));
-    }
-    const secret = process.env.JWT_SECRET;
-    const decode = (yield jsonwebtoken_1.default.verify(token, config_1.config.token.secret));
-    if (!decode) {
-        return new Erromessage_1.default('You are not Authorized, Kindly log in to continue', 401);
-    }
-    res.locals.jwt = decode;
-    req.user = yield peopleModel_1.default.findById({ _id: decode.id });
-    console.log(req.user);
-    next();
+const NAMESPACE = 'makeJWT';
+const makeJWT = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    var timeSinceEpoch = new Date().getTime();
+    var expirationTime = timeSinceEpoch + Number(config_1.config.token.expiresIn) * 100000;
+    var expirationTimeInSeconds = Math.floor(expirationTime / 1000);
+    console.log(NAMESPACE, `Attemptiing to sign token ${user.name}`);
+    return jsonwebtoken_1.default.sign({ email: user.email, id: user._id }, config_1.config.token.secret, {
+        issuer: config_1.config.token.issuer,
+        algorithm: 'HS256',
+        expiresIn: expirationTimeInSeconds,
+    });
 });
-exports.default = protectedRoute;
+exports.default = makeJWT;

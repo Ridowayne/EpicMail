@@ -44,14 +44,3 @@ const protectedRoute = async (
 };
 
 export default protectedRoute;
-
-// (error, result) => {
-//   if (error) {
-//     console.log(error);
-//     return res.status(401).json({
-//       message: 'You are not Authorized, Kindly log in to continue',
-//     });
-//   }
-//   console.log(result);
-//   // const userId = result.id;
-// }

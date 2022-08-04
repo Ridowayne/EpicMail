@@ -29,14 +29,22 @@ const MailSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    senderID: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'People',
+    },
     receiver: {
         type: String,
         required: [true, 'Kindly provide a recipient for this message'],
     },
+    receiverID: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'People',
+    },
     status: {
         required: true,
         type: String,
-        enum: ['sent', 'draft', 'retrated'],
+        enum: ['sent', 'draft'],
         default: 'draft',
     },
     subject: {
@@ -66,10 +74,6 @@ const MailSchema = new mongoose_1.Schema({
 }, {
     versionKey: false,
     timestamps: true,
-});
-MailSchema.pre(/^find/, function (next) {
-    this.find({ retracted: { $ne: true } });
-    next();
 });
 MailSchema.post(/^findOne/, function (docs, next) {
     this.opened = true;

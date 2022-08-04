@@ -35,7 +35,7 @@ const sendMail = {
             },
         },
     },
-    response: {
+    responses: {
         200: {
             description: 'OK',
             content: {
@@ -70,7 +70,7 @@ const getMessage = {
     tags: ['Mail'],
     description: 'routes to get a message',
     summary: 'For getting individual messages',
-    response: {
+    responses: {
         200: {
             description: 'OK',
             content: {
@@ -94,7 +94,7 @@ const inbox = {
     tags: ['Mail'],
     description: 'routes to get inbox messages',
     summary: 'For getting users inbox  messages',
-    response: {
+    responses: {
         200: {
             description: 'OK',
             content: {
@@ -116,7 +116,7 @@ const sentMessages = {
     tags: ['Mail'],
     description: 'routes to get sent messages',
     summary: 'For getting users sent messages',
-    response: {
+    responses: {
         200: {
             description: 'OK',
             content: {
@@ -138,7 +138,7 @@ const retractedMessages = {
     tags: ['Mail'],
     description: 'routes to get retracted messages',
     summary: 'For getting users retracted  messages',
-    response: {
+    responses: {
         200: {
             description: 'OK',
             content: {
@@ -160,7 +160,7 @@ const draftMessages = {
     tags: ['Mail'],
     description: 'routes to get draft messages',
     summary: 'For getting users draft messages',
-    response: {
+    responses: {
         200: {
             description: 'OK',
             content: {
@@ -200,6 +200,18 @@ const mailRoutesDoc = {
     },
     '/api/v1/mail/getMessage/{id}:': {
         get: getMessage,
+    },
+    '/api/v1/mail/inbox': {
+        get: inbox,
+    },
+    '/api/v1/mail/sentMessages': {
+        get: sentMessages,
+    },
+    '/api/v1/mail/drafts': {
+        get: draftMessages,
+    },
+    '/api/v1/mail/retractedMessages': {
+        get: retractedMessages,
     },
 };
 exports.default = mailRoutesDoc;

@@ -1,29 +1,36 @@
 import { NextFunction, Request, Response } from 'express';
-import mongoose from 'mongoose';
+import People from '../models/peopleModel';
 import ErrorResponse from '../utils/Erromessage';
 import Message, { IMail } from './../models/MessageModel';
+import services from '../services/message.services';
 
 const createMessage = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  const receiverInfo = await People.findOne({ email: req.body.receiver });
+  if (!receiverInfo) {
+    return new ErrorResponse(
+      'There is no user with such email, kindly confirm the email address',
+      404
+    );
+  }
   const newmail = new Message({
     sender: req.user.email,
+    senderID: req.user.id,
     receiver: req.body.receiver,
+    receiverID: receiverInfo.id,
     status: req.body.status,
     heading: req.body.heading,
     body: req.body.body,
   });
-  return newmail
+  return await newmail
     .save()
     .then((newmail) => res.status(201).json({ newmail }))
     .catch((error) => res.status(500).json({ error }));
 };
 
-// inbox, sent message, draft, retract message, get a message
-
-// for retracting a message(need to model it such that only sender can retarct the message)
 const retractAMessage = async (req: Request, res: Response) => {
   try {
     const message = await Message.findOne({
@@ -37,16 +44,18 @@ const retractAMessage = async (req: Request, res: Response) => {
       });
     }
 
-    if (req.user.email !== message.sender) {
-      return res.status(404).json({
+    if (req.user.id !== message.senderID.toString()) {
+      return res.status(401).json({
         status: 'fail',
-        message: 'Only the sender can retract this message',
+        message:
+          'Only the sender can retract this message but you can delete if you do not wish to see it',
       });
     }
-    await message.updateOne({ status: req.body.staus, retracted: 'true' });
+    await message.updateOne({ retracted: 'true' });
     return res.status(200).json({
       status: 'success',
-      report: 'message retracted and no longer availabe to the receiver',
+      report:
+        'message retracted and no longer availabe to be viewed by the receiver',
       content: message,
     });
   } catch (error) {
@@ -66,7 +75,6 @@ const getMessage = async (req: Request, res: Response) => {
     }
     return res.status(200).json({
       status: 'success',
-      count: message.length,
       content: message,
     });
   } catch (error) {
@@ -77,9 +85,12 @@ const getMessage = async (req: Request, res: Response) => {
 const inboxMessage = async (req: Request, res: Response) => {
   try {
     const message = await Message.find({
-      receiver: { toString: () => req.user.email },
+      // receiver: { toString: () => req.user.email },
+      receiverID: req.user.id,
       status: 'sent',
+      retracted: false,
     });
+
     return res.status(200).json({
       status: 'success',
       count: message.length,
@@ -89,33 +100,30 @@ const inboxMessage = async (req: Request, res: Response) => {
     return new ErrorResponse('could not get inbox message', 404);
   }
 };
+
 const sentMessages = async (req: Request, res: Response) => {
   try {
+    const query = { senderID: req.user.id, status: 'sent' }.toString;
     const message = await Message.find({
-      sender: { toString: () => req.user.email },
+      senderID: req.user.id,
       status: 'sent',
     });
 
-    if (!message) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'Unable to get sent Messages at the moment',
-      });
-    }
     return res.status(200).json({
       status: 'success',
-      count: message.length,
+
       content: message,
     });
   } catch (error) {
     return new ErrorResponse('could not get sent messages at the moment', 404);
   }
 };
+
 const retractedMessages = async (req: Request, res: Response) => {
   try {
     const message = await Message.find({
-      sender: { toString: () => req.user.email },
-      status: 'retracted',
+      senderID: req.user.id,
+      retracted: true,
     });
 
     if (!message) {
@@ -140,7 +148,7 @@ const retractedMessages = async (req: Request, res: Response) => {
 const draftMessages = async (req: Request, res: Response) => {
   try {
     const message = await Message.find({
-      sender: { toString: () => req.user.email },
+      senderID: req.user.id,
       status: 'draft',
     });
 
@@ -169,3 +177,11 @@ export default {
   retractedMessages,
   draftMessages,
 };
+
+// const query = {
+//   receiverID: req.user.id,
+//   status: 'sent',
+//   retracted: false,
+// };
+
+// const inbox = services.getMany(query);

@@ -12,23 +12,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const peopleModel_1 = __importDefault(require("../models/peopleModel"));
 const Erromessage_1 = __importDefault(require("../utils/Erromessage"));
 const MessageModel_1 = __importDefault(require("./../models/MessageModel"));
 const createMessage = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const receiverInfo = yield peopleModel_1.default.findOne({ email: req.body.receiver });
+    if (!receiverInfo) {
+        return new Erromessage_1.default('There is no user with such email, kindly confirm the email address', 404);
+    }
     const newmail = new MessageModel_1.default({
         sender: req.user.email,
+        senderID: req.user.id,
         receiver: req.body.receiver,
+        receiverID: receiverInfo.id,
         status: req.body.status,
         heading: req.body.heading,
         body: req.body.body,
     });
-    return newmail
+    return yield newmail
         .save()
         .then((newmail) => res.status(201).json({ newmail }))
         .catch((error) => res.status(500).json({ error }));
 });
-// inbox, sent message, draft, retract message, get a message
-// for retracting a message(need to model it such that only sender can retarct the message)
 const retractAMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const message = yield MessageModel_1.default.findOne({
@@ -40,16 +45,16 @@ const retractAMessage = (req, res) => __awaiter(void 0, void 0, void 0, function
                 message: 'No message with such ID found',
             });
         }
-        if (req.user.email !== message.sender) {
-            return res.status(404).json({
+        if (req.user.id !== message.senderID.toString()) {
+            return res.status(401).json({
                 status: 'fail',
-                message: 'Only the sender can retract this message',
+                message: 'Only the sender can retract this message but you can delete if you do not wish to see it',
             });
         }
-        yield message.updateOne({ status: req.body.staus, retracted: 'true' });
+        yield message.updateOne({ retracted: 'true' });
         return res.status(200).json({
             status: 'success',
-            report: 'message retracted and no longer availabe to the receiver',
+            report: 'message retracted and no longer availabe to be viewed by the receiver',
             content: message,
         });
     }
@@ -68,7 +73,6 @@ const getMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
         return res.status(200).json({
             status: 'success',
-            count: message.length,
             content: message,
         });
     }
@@ -79,8 +83,10 @@ const getMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 const inboxMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const message = yield MessageModel_1.default.find({
-            receiver: { toString: () => req.user.email },
+            // receiver: { toString: () => req.user.email },
+            receiverID: req.user.id,
             status: 'sent',
+            retracted: false,
         });
         return res.status(200).json({
             status: 'success',
@@ -94,19 +100,13 @@ const inboxMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 const sentMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const query = { senderID: req.user.id, status: 'sent' }.toString;
         const message = yield MessageModel_1.default.find({
-            sender: { toString: () => req.user.email },
+            senderID: req.user.id,
             status: 'sent',
         });
-        if (!message) {
-            return res.status(404).json({
-                status: 'fail',
-                message: 'Unable to get sent Messages at the moment',
-            });
-        }
         return res.status(200).json({
             status: 'success',
-            count: message.length,
             content: message,
         });
     }
@@ -117,8 +117,8 @@ const sentMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 const retractedMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const message = yield MessageModel_1.default.find({
-            sender: { toString: () => req.user.email },
-            status: 'retracted',
+            senderID: req.user.id,
+            retracted: true,
         });
         if (!message) {
             return res.status(404).json({
@@ -139,7 +139,7 @@ const retractedMessages = (req, res) => __awaiter(void 0, void 0, void 0, functi
 const draftMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const message = yield MessageModel_1.default.find({
-            sender: { toString: () => req.user.email },
+            senderID: req.user.id,
             status: 'draft',
         });
         if (!message) {
@@ -167,3 +167,9 @@ exports.default = {
     retractedMessages,
     draftMessages,
 };
+// const query = {
+//   receiverID: req.user.id,
+//   status: 'sent',
+//   retracted: false,
+// };
+// const inbox = services.getMany(query);

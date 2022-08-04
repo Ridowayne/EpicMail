@@ -1,7 +1,6 @@
 import userRoutesDoc from '../routes/auth.doc';
 import mailRoutesDoc from '../routes/message.doc';
-import userRoutesDoc2 from '../routes/auth.doc';
-import userRoutesDoc3 from '../routes/auth.doc';
+
 const swaggerDocumentation = {
   openapi: '3.0.0',
   info: {

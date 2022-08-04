@@ -1,9 +1,13 @@
 import { string } from 'joi';
 import mongoose, { Document, Schema } from 'mongoose';
 
+// senderID, receiverID
+
 export interface IMail extends mongoose.Document {
   sender: string;
+  senderID: string | mongoose.Types.ObjectId;
   receiver: string;
+  receiverID: string | mongoose.Types.ObjectId;
   subject: string;
   status: string;
   body: string | number;
@@ -19,14 +23,22 @@ const MailSchema: Schema = new Schema<IMail>(
       type: String,
       required: true,
     },
+    senderID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'People',
+    },
     receiver: {
       type: String,
       required: [true, 'Kindly provide a recipient for this message'],
     },
+    receiverID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'People',
+    },
     status: {
       required: true,
       type: String,
-      enum: ['sent', 'draft', 'retrated'],
+      enum: ['sent', 'draft'],
       default: 'draft',
     },
     subject: {
@@ -59,12 +71,6 @@ const MailSchema: Schema = new Schema<IMail>(
     timestamps: true,
   }
 );
-
-MailSchema.pre(/^find/, function (next) {
-  this.find({ retracted: { $ne: true } });
-
-  next();
-});
 
 MailSchema.post(/^findOne/, function (docs, next) {
   this.opened = true;

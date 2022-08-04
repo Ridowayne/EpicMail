@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import People from '../models/peopleModel';
 import makeJWT from '../functions/signtoken';
 import sendEmail from '../utils/nodemailer';
+import * as services from '../services/user.services';
 import IUser from '../interfaces/authInterface';
 import ErrorResponse from '../utils/Erromessage';
 
@@ -166,16 +167,23 @@ const resetPassword = async (
   });
 };
 
-const getAllUsers = async (req: Request, res: Response, Next: NextFunction) => {
+const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const allUsers = await People.find().select('-password');
-    return res.status(200).json({
-      status: 'sucess',
-      users: allUsers,
-    });
+    var page = req.params.page ? req.params.page : 1;
+    var limit = req.params.limit ? req.params.limit : 10;
+    services.getMany(People, page, limit);
+
+    // await People.find().select('-password');
+    // return res.status(200).json({
+    //   status: 'sucess',
+    //   users: allUsers,
+    // });
   } catch (error) {
     return res.status(500).json({ message: 'Internal Server Error' });
   }
+};
+const getUser = async (req: Request, res: Response, next: NextFunction) => {
+  services.getOne(People);
 };
 
 export default {
@@ -184,4 +192,5 @@ export default {
   forgotPassword,
   resetPassword,
   signUp,
+  getUser,
 };

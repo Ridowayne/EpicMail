@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -18,6 +41,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const peopleModel_1 = __importDefault(require("../models/peopleModel"));
 const signtoken_1 = __importDefault(require("../functions/signtoken"));
 const nodemailer_1 = __importDefault(require("../utils/nodemailer"));
+const services = __importStar(require("../services/user.services"));
 const Erromessage_1 = __importDefault(require("../utils/Erromessage"));
 const signUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -146,17 +170,23 @@ const resetPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         });
     }));
 });
-const getAllUsers = (req, res, Next) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const allUsers = yield peopleModel_1.default.find().select('-password');
-        return res.status(200).json({
-            status: 'sucess',
-            users: allUsers,
-        });
+        var page = req.params.page ? req.params.page : 1;
+        var limit = req.params.limit ? req.params.limit : 10;
+        services.getMany(peopleModel_1.default, page, limit);
+        // await People.find().select('-password');
+        // return res.status(200).json({
+        //   status: 'sucess',
+        //   users: allUsers,
+        // });
     }
     catch (error) {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
+});
+const getUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    services.getOne(peopleModel_1.default);
 });
 exports.default = {
     login,
@@ -164,4 +194,5 @@ exports.default = {
     forgotPassword,
     resetPassword,
     signUp,
+    getUser,
 };

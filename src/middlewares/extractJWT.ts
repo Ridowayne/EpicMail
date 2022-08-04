@@ -38,7 +38,6 @@ const protectedRoute = async (
   }
   res.locals.jwt = decode;
   req.user = await People.findById({ _id: decode.id });
-  console.log(req.user);
 
   next();
 };

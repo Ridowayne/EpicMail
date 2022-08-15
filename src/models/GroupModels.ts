@@ -13,6 +13,7 @@ export interface IGroup extends Document {
 const groupSchema = new Schema({
   groupName: {
     type: String,
+    required: [true, 'Please give your group a name'],
   },
   createdAt: {
     type: Date,
@@ -22,6 +23,12 @@ const groupSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
+  messages: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: 'Message',
+    },
+  ],
   menbers: [
     {
       type: mongoose.Types.ObjectId,

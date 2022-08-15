@@ -8,6 +8,7 @@ export interface IMail extends mongoose.Document {
   senderID: string | mongoose.Types.ObjectId;
   receiver: string;
   receiverID: string | mongoose.Types.ObjectId;
+  groupID: string | mongoose.Types.ObjectId;
   subject: string;
   status: string;
   body: string | number;
@@ -24,6 +25,10 @@ const MailSchema: Schema = new Schema<IMail>(
       required: true,
     },
     senderID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'People',
+    },
+    groupID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'People',
     },

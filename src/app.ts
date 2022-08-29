@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 
 import ErrorResponse from './utils/Erromessage';
 import messagageRoutes from './routes/messageRoutes';
+import groupMessaging from './routes/groupRoutes';
 import authenticate from './routes/authRoutes';
 import swaggerDocumentation from './helper/documentations';
 import sendError from './contollers/errorController';
@@ -25,6 +26,7 @@ app.use('/documentations', swaggerUi.serve);
 app.use('/documentations', swaggerUi.setup(swaggerDocumentation));
 app.use('/api/v1/mail', messagageRoutes);
 app.use('/api/v1/users', authenticate);
+app.use('/api/v1/group', groupMessaging);
 
 // error handling
 app.use((req: Request, res: Response, next: NextFunction) => {

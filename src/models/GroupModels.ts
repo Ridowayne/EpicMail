@@ -7,6 +7,7 @@ export interface IGroup extends Document {
   groupName: string;
   createdAt: Date;
   groupAdmin: mongoose.Types.ObjectId;
+  messages: mongoose.Types.ObjectId | string;
   members: mongoose.Types.ObjectId;
 }
 
@@ -25,13 +26,13 @@ const groupSchema = new Schema({
   },
   messages: [
     {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Message',
     },
   ],
   menbers: [
     {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
   ],

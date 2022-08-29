@@ -1,4 +1,5 @@
 import userRoutesDoc from '../routes/auth.doc';
+import groupRoutesDoc from '../routes/group.doc';
 import mailRoutesDoc from '../routes/message.doc';
 
 const swaggerDocumentation = {
@@ -28,11 +29,16 @@ const swaggerDocumentation = {
       name: 'Mail',
       description: 'Mail routes',
     },
+    {
+      name: 'Group',
+      description: 'Group routes',
+    },
   ],
 
   paths: {
     ...userRoutesDoc,
     ...mailRoutesDoc,
+    ...groupRoutesDoc,
   },
 };
 

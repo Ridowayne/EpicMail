@@ -4,7 +4,7 @@
   "description": "Web application that helps people exchange messages and information over the internet.",
   "main": "tssrc/server.ts",
   "scripts": {
-    "build": "rm -rf build/ && tsc",
+    "build": "rm -rf dist/ && tsc",
     "start": "node dist/server.js",
     "test": "nodemon server.js",
     "tost": "mocha -r ts-node/register src/**/auth.test.ts  --timeout 40000",

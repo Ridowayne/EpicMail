@@ -32,14 +32,18 @@ const MailSchema: Schema = new Schema<IMail>(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'People',
     },
-    receiver: {
-      type: String,
-      required: [true, 'Kindly provide a recipient for this message'],
-    },
-    receiverID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'People',
-    },
+    receiver: [
+      {
+        type: String,
+        required: [true, 'Kindly provide a recipient for this message'],
+      },
+    ],
+    receiverID: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'People',
+      },
+    ],
     status: {
       required: true,
       type: String,
